@@ -1054,7 +1054,7 @@ function buildGrid(products, gridId, category) {
       : '';
 
     const imgEl = `<div class="prod-flacon-display">
-        <img class="prod-flacon-img" src="${category === 'mixte' ? (p.img || flaconSrc) : flaconSrc}" alt="Flacon ${p.name}" loading="lazy">
+        <img class="prod-flacon-img" src="${(category === 'mixte' || category === 'ambiance') ? (p.img || flaconSrc) : flaconSrc}" alt="Flacon ${p.name}" loading="lazy">
       </div>${notesBadgesHtml}`;
 
     const varBtns = vars.map((v,i) =>
@@ -1181,7 +1181,7 @@ function openProductDetail(idx, category) {
   _pdCategory = category;
 
   const imgCol = document.getElementById('pdImgCol');
-  const pdFlaconSrc = category === 'homme' ? 'flacon-homme.webp' : category === 'mixte' && p.img ? p.img : 'flacon-femme.webp';
+  const pdFlaconSrc = category === 'homme' ? 'flacon-homme.webp' : (category === 'mixte' || category === 'ambiance') && p.img ? p.img : 'flacon-femme.webp';
   imgCol.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:280px;background:linear-gradient(160deg,var(--bg2),var(--bg3));padding:10%"><img src="${pdFlaconSrc}" alt="Flacon ${p.name}" style="max-height:320px;max-width:100%;object-fit:contain;filter:drop-shadow(0 12px 30px rgba(0,0,0,.2))"></div>`;
 
   const labels = {femme:'Collection Femme', homme:'Collection Homme', mixte:'Collection Mixte'};
