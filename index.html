@@ -417,6 +417,30 @@ footer{border-top:1px solid var(--border);padding:2.5rem 4rem;display:flex;justi
   .prod-flacon-img{height:60%}
 }
 /* ════════════════════════════════════════════════════════════════ */
+/* LAISSER UN AVIS */
+.write-review-section{padding:7rem 4rem;background:var(--bg2)}
+.write-review-inner{max-width:720px;margin:0 auto}
+.write-review-header{text-align:center;margin-bottom:3.5rem}
+.write-review-form{background:var(--card);border:1px solid var(--border);padding:3rem}
+.wrf-field{margin-bottom:1.8rem}
+.wrf-label{display:block;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dark2);margin-bottom:.6rem;font-weight:500}
+.wrf-input,.wrf-select,.wrf-textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--dark);font-family:'Jost',sans-serif;font-size:.88rem;font-weight:300;padding:.85rem 1rem;outline:none;transition:border-color .3s;box-sizing:border-box;appearance:none;-webkit-appearance:none}
+.wrf-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23B8924A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;cursor:pointer}
+.wrf-input:focus,.wrf-select:focus,.wrf-textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,146,74,.08)}
+.wrf-input::placeholder,.wrf-textarea::placeholder{color:var(--text-dim);font-style:italic}
+.wrf-textarea{resize:vertical;min-height:110px;line-height:1.7}
+.wrf-stars-row{display:flex;gap:.4rem;margin-top:.2rem}
+.wrf-star{font-size:1.6rem;cursor:pointer;color:rgba(184,146,74,.25);transition:color .15s,transform .15s;line-height:1;user-select:none}
+.wrf-star.active,.wrf-star.hover{color:var(--gold)}
+.wrf-star:hover{transform:scale(1.15)}
+.wrf-row{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.wrf-submit-row{text-align:center;margin-top:2rem}
+.wrf-confirm{display:none;text-align:center;padding:2.5rem;border:1px solid var(--border);background:var(--card)}
+.wrf-confirm-icon{font-size:2.2rem;margin-bottom:1rem}
+.wrf-confirm-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--dark);margin-bottom:.6rem}
+.wrf-confirm-text{font-size:.82rem;color:var(--text-dim);line-height:1.7}
+.wrf-error{font-size:.72rem;color:#c0392b;margin-top:.35rem;display:none;letter-spacing:.05em}
+@media(max-width:768px){.write-review-section{padding:4rem 1.2rem}.write-review-form{padding:2rem 1.4rem}.wrf-row{grid-template-columns:1fr}}
 </style>
 <!-- Meta Pixel Code -->
 <script>
@@ -670,6 +694,153 @@ src="https://www.facebook.com/tr?id=1497275195267883&ev=PageView&noscript=1"
       <span class="review-verified">✓ Achat vérifié</span>
     </div>
 
+  </div>
+</section>
+
+<!-- LAISSER UN AVIS -->
+<section id="laisser-avis" class="write-review-section">
+  <div class="write-review-inner">
+    <div class="write-review-header reveal">
+      <p class="reviews-eyebrow">Partagez votre expérience</p>
+      <h2 class="reviews-title">Laisser un <em>avis</em></h2>
+    </div>
+    <div class="write-review-form reveal" id="reviewForm">
+      <div class="wrf-row">
+        <div class="wrf-field">
+          <label class="wrf-label" for="wrf-prenom">Prénom</label>
+          <input class="wrf-input" type="text" id="wrf-prenom" placeholder="Votre prénom" autocomplete="given-name">
+          <span class="wrf-error" id="err-prenom">Veuillez indiquer votre prénom.</span>
+        </div>
+        <div class="wrf-field">
+          <label class="wrf-label" for="wrf-email">Email</label>
+          <input class="wrf-input" type="email" id="wrf-email" placeholder="votre@email.com" autocomplete="email">
+          <span class="wrf-error" id="err-email">Adresse e-mail invalide.</span>
+        </div>
+      </div>
+      <div class="wrf-field">
+        <label class="wrf-label" for="wrf-parfum">Parfum acheté</label>
+        <select class="wrf-select" id="wrf-parfum">
+          <option value="">— Sélectionnez un parfum —</option>
+          <option>Inspiré de 1 Million Paco Rabanne</option>
+          <option>Inspiré de Acqua di Gio Armani</option>
+          <option>Inspiré de Acqua di Gio Profondo Armani</option>
+          <option>Inspiré de Acqua di Parma Colonia</option>
+          <option>Inspiré de Alien Mugler</option>
+          <option>Inspiré de Allure Chanel</option>
+          <option>Inspiré de Allure Homme Chanel</option>
+          <option>Inspiré de Ambre Nuit Dior</option>
+          <option>Inspiré de Angel Mugler</option>
+          <option>Inspiré de Aventus Creed</option>
+          <option>Inspiré de Baccarat Rouge 540 MFK</option>
+          <option>Inspiré de Be Delicious DKNY</option>
+          <option>Inspiré de Black Opium YSL</option>
+          <option>Inspiré de Black Opium Intense YSL</option>
+          <option>Inspiré de Black Opium Night YSL</option>
+          <option>Inspiré de Black Orchid Tom Ford</option>
+          <option>Inspiré de Bleu de Chanel</option>
+          <option>Inspiré de Bloom Gucci</option>
+          <option>Inspiré de Boss Bottled Hugo Boss</option>
+          <option>Inspiré de Bright Crystal Versace</option>
+          <option>Inspiré de Chance Chanel</option>
+          <option>Inspiré de Chloé EDP Chloé</option>
+          <option>Inspiré de Chrome Azzaro</option>
+          <option>Inspiré de Coco Chanel</option>
+          <option>Inspiré de Coco Mademoiselle Chanel</option>
+          <option>Inspiré de Code Armani</option>
+          <option>Inspiré de Cool Water Davidoff</option>
+          <option>Inspiré de Coromandel Chanel</option>
+          <option>Inspiré de Crystal Noir Versace</option>
+          <option>Inspiré de Daisy Marc Jacobs</option>
+          <option>Inspiré de Delina Parfums de Marly</option>
+          <option>Inspiré de Delina Exclusif Parfums de Marly</option>
+          <option>Inspiré de Dior Homme Intense Dior</option>
+          <option>Inspiré de Éternité Calvin Klein</option>
+          <option>Inspiré de Fahrenheit Dior</option>
+          <option>Inspiré de Flowerbomb Viktor &amp; Rolf</option>
+          <option>Inspiré de For Her Narciso Rodriguez</option>
+          <option>Inspiré de Gabrielle Chanel</option>
+          <option>Inspiré de Gentleman Dior</option>
+          <option>Inspiré de Gentleman Givenchy</option>
+          <option>Inspiré de Gold Jean Patou</option>
+          <option>Inspiré de Guilty Gucci</option>
+          <option>Inspiré de Habit Rouge Guerlain</option>
+          <option>Inspiré de Happy Clinique</option>
+          <option>Inspiré de Idôle Lancôme</option>
+          <option>Inspiré de Invictus Paco Rabanne</option>
+          <option>Inspiré de J'adore Dior</option>
+          <option>Inspiré de Joy Dior</option>
+          <option>Inspiré de La Nuit Trésor Lancôme</option>
+          <option>Inspiré de La Petite Robe Noire Guerlain</option>
+          <option>Inspiré de La Vie est Belle Lancôme</option>
+          <option>Inspiré de La Vie est Belle L'Éclat Lancôme</option>
+          <option>Inspiré de Legend Mont Blanc</option>
+          <option>Inspiré de L'Homme YSL</option>
+          <option>Inspiré de Libre YSL</option>
+          <option>Inspiré de Libre Intense YSL</option>
+          <option>Inspiré de Light Blue Dolce &amp; Gabbana</option>
+          <option>Inspiré de Light Blue Intense Dolce &amp; Gabbana</option>
+          <option>Inspiré de Lost Cherry Tom Ford</option>
+          <option>Inspiré de Manifesto YSL</option>
+          <option>Inspiré de Midnight in Paris Van Cleef &amp; Arpels</option>
+          <option>Inspiré de Miss Dior Absolutely Blooming</option>
+          <option>Inspiré de Miss Dior Chérie Dior</option>
+          <option>Inspiré de Miss Dior Rose N'Roses</option>
+          <option>Inspiré de Mitsouko Guerlain</option>
+          <option>Inspiré de Mon Paris YSL</option>
+          <option>Inspiré de Mon Paris Intensément YSL</option>
+          <option>Inspiré de N°5 Chanel</option>
+          <option>Inspiré de Neroli Portofino Tom Ford</option>
+          <option>Inspiré de Neroli Portofino Acqua Tom Ford</option>
+          <option>Inspiré de Nuit d'Issey Issey Miyake</option>
+          <option>Inspiré de Olympéa Paco Rabanne</option>
+          <option>Inspiré de Ombre Leather Tom Ford</option>
+          <option>Inspiré de Opium YSL</option>
+          <option>Inspiré de Oud Wood Tom Ford</option>
+          <option>Inspiré de Pleasures Estée Lauder</option>
+          <option>Inspiré de Pour Homme Givenchy</option>
+          <option>Inspiré de Roma Laura Biagiotti</option>
+          <option>Inspiré de Rose Oud Montale</option>
+          <option>Inspiré de Rose &amp; Oud Montale</option>
+          <option>Inspiré de Sauvage Dior</option>
+          <option>Inspiré de Shalimar Guerlain</option>
+          <option>Inspiré de Sì Armani</option>
+          <option>Inspiré de Sì Passione Armani</option>
+          <option>Inspiré de Signorina Ferragamo</option>
+          <option>Inspiré de Silver Mountain Water Creed</option>
+          <option>Inspiré de Soleil Blanc Tom Ford</option>
+          <option>Inspiré de Spicebomb Viktor &amp; Rolf</option>
+          <option>Inspiré de Terre d'Hermès Hermès</option>
+          <option>Inspiré de Tobacco Vanille Tom Ford</option>
+          <option>Inspiré de Tuscan Leather Tom Ford</option>
+          <option>Inspiré de Wanted Azzaro</option>
+        </select>
+        <span class="wrf-error" id="err-parfum">Veuillez sélectionner un parfum.</span>
+      </div>
+      <div class="wrf-field">
+        <label class="wrf-label">Note</label>
+        <div class="wrf-stars-row" id="wrfStars" role="group" aria-label="Note de 1 à 5">
+          <span class="wrf-star" data-v="1" aria-label="1 étoile" role="button" tabindex="0">★</span>
+          <span class="wrf-star" data-v="2" aria-label="2 étoiles" role="button" tabindex="0">★</span>
+          <span class="wrf-star" data-v="3" aria-label="3 étoiles" role="button" tabindex="0">★</span>
+          <span class="wrf-star" data-v="4" aria-label="4 étoiles" role="button" tabindex="0">★</span>
+          <span class="wrf-star" data-v="5" aria-label="5 étoiles" role="button" tabindex="0">★</span>
+        </div>
+        <span class="wrf-error" id="err-note">Veuillez attribuer une note.</span>
+      </div>
+      <div class="wrf-field">
+        <label class="wrf-label" for="wrf-comment">Commentaire</label>
+        <textarea class="wrf-textarea" id="wrf-comment" placeholder="Partagez votre expérience avec ce parfum…"></textarea>
+        <span class="wrf-error" id="err-comment">Veuillez écrire un commentaire (10 caractères min.).</span>
+      </div>
+      <div class="wrf-submit-row">
+        <button class="btn-gold" id="wrfSubmitBtn" onclick="submitReview()"><span>Publier mon avis</span></button>
+      </div>
+    </div>
+    <div class="wrf-confirm" id="reviewConfirm">
+      <div class="wrf-confirm-icon">✦</div>
+      <h3 class="wrf-confirm-title">Merci pour votre avis !</h3>
+      <p class="wrf-confirm-text">Votre avis a bien été transmis. Il sera publié après modération.<br>Nous vous remercions de contribuer à la communauté Cheirobom.</p>
+    </div>
   </div>
 </section>
 
@@ -1258,6 +1429,53 @@ if (_initCountEl && CATALOGUE.femme) _initCountEl.textContent = `${CATALOGUE.fem
     showToast('Paiement annulé ou refusé. Vous pouvez réessayer.');
     history.replaceState(null, '', window.location.pathname);
   }
+})();
+
+// ─── FORMULAIRE AVIS ─────────────────────────────────────
+(function(){
+  let wrfRating = 0;
+  const stars = document.querySelectorAll('.wrf-star');
+
+  function paintStars(n){
+    stars.forEach(s => {
+      const v = parseInt(s.dataset.v);
+      s.classList.toggle('active', v <= n);
+    });
+  }
+
+  stars.forEach(s => {
+    s.addEventListener('mouseenter', () => paintStars(parseInt(s.dataset.v)));
+    s.addEventListener('mouseleave', () => paintStars(wrfRating));
+    s.addEventListener('click', () => { wrfRating = parseInt(s.dataset.v); paintStars(wrfRating); });
+    s.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ wrfRating=parseInt(s.dataset.v); paintStars(wrfRating); } });
+  });
+
+  window.submitReview = async function(){
+    let ok = true;
+    function showErr(id, cond){ const el=document.getElementById(id); el.style.display=cond?'none':'block'; if(!cond) ok=false; }
+    const prenom = document.getElementById('wrf-prenom').value.trim();
+    const email  = document.getElementById('wrf-email').value.trim();
+    const parfum = document.getElementById('wrf-parfum').value;
+    const comment= document.getElementById('wrf-comment').value.trim();
+    showErr('err-prenom',  prenom.length > 0);
+    showErr('err-email',   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+    showErr('err-parfum',  parfum.length > 0);
+    showErr('err-note',    wrfRating > 0);
+    showErr('err-comment', comment.length >= 10);
+    if(!ok) return;
+    const btn = document.getElementById('wrfSubmitBtn');
+    btn.disabled = true;
+    btn.querySelector('span').textContent = 'Envoi en cours…';
+    try {
+      await fetch((window.BACKEND||'https://cheirobom-backend.onrender.com') + '/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom, email, parfum, note: wrfRating, commentaire: comment })
+      });
+    } catch(_){}
+    document.getElementById('reviewForm').style.display = 'none';
+    document.getElementById('reviewConfirm').style.display = 'block';
+  };
 })();
 </script>
 </body>
