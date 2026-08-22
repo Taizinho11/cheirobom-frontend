@@ -394,6 +394,17 @@ footer{border-top:1px solid var(--border);padding:2.5rem 4rem;display:flex;justi
 @media (hover:hover) and (pointer:fine){.prod-card:hover .prod-flacon-img{transform:scale(1.08) translateY(-6px)}}@media (hover:hover) and (pointer:fine){.prod-card:hover .prod-flacon-img-hover{opacity:1}}
 .prod-notes-preview{position:absolute;bottom:0;left:0;right:0;padding:.55rem .4rem .6rem;display:flex;flex-wrap:wrap;gap:.22rem;justify-content:center;background:linear-gradient(to top,rgba(44,36,22,.72) 0%,transparent 100%)}
 .note-badge{font-size:.5rem;letter-spacing:.06em;text-transform:uppercase;background:rgba(184,146,74,.88);color:#fff;padding:.16rem .42rem;border-radius:20px;white-space:nowrap;font-family:'Jost',sans-serif;font-weight:400;backdrop-filter:blur(2px)}
+
+/* ─── Dégradés par famille olfactive (Femme/Homme, flacon générique) ─── */
+#grid-femme .prod-flacon-img,#grid-homme .prod-flacon-img{height:82%;max-width:76%}
+#grid-femme .famille-bg-floral,#grid-homme .famille-bg-floral{background:linear-gradient(160deg,#F9E4E7 0%,#EEC7CF 100%)}
+#grid-femme .famille-bg-boise,#grid-homme .famille-bg-boise{background:linear-gradient(160deg,#E9DDC9 0%,#D2BE9C 100%)}
+#grid-femme .famille-bg-oriental,#grid-homme .famille-bg-oriental{background:linear-gradient(160deg,#EBDAC3 0%,#C6A473 100%)}
+#grid-femme .famille-bg-frais,#grid-homme .famille-bg-frais{background:linear-gradient(160deg,#DCEAE7 0%,#BADAD5 100%)}
+#grid-femme .famille-bg-gourmand,#grid-homme .famille-bg-gourmand{background:linear-gradient(160deg,#EFE1CF 0%,#DABC98 100%)}
+.prod-famille-tag{position:absolute;top:.6rem;left:.6rem;width:1.7rem;height:1.7rem;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.65);border-radius:50%;font-size:.8rem;backdrop-filter:blur(3px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+#grid-femme .prod-notes-preview,#grid-homme .prod-notes-preview{background:linear-gradient(to top,rgba(255,255,255,.85) 0%,rgba(255,255,255,0) 100%);padding-top:1.4rem}
+#grid-femme .note-badge,#grid-homme .note-badge{background:rgba(255,255,255,.75);color:var(--dark);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 /* ════════════════════════════════════════════════════════════════ */
 
 /* ═══ MOBILE EXTRA ════════════════════════════════════════════════ */
@@ -1367,9 +1378,15 @@ function buildGrid(products, gridId, category) {
       ? `<div class="prod-notes-preview">${allNotes.map(n => `<span class="note-badge">${noteEmoji(n)}${n}</span>`).join('')}</div>`
       : '';
 
-    const imgEl = `<div class="prod-flacon-display">
+    const isGenericFlacon = category === 'femme' || category === 'homme';
+    const famille = isGenericFlacon ? detectFamille(p) : null;
+    const familleClass = famille ? ` famille-bg-${famille}` : '';
+    const familleTagHtml = famille ? `<span class="prod-famille-tag">${FAMILLE_EMOJI[famille]}</span>` : '';
+
+    const imgEl = `<div class="prod-flacon-display${familleClass}">
         <img class="prod-flacon-img" src="${(category === 'mixte' || category === 'ambiance' || category === 'soin' || category === 'brume') ? (p.img || flaconSrc) : flaconSrc}" alt="Flacon ${p.name}" loading="lazy">
         ${p.img2 ? `<img class="prod-flacon-img-hover" src="${p.img2}" alt="${p.name} - notes olfactives" loading="lazy">` : ''}
+        ${familleTagHtml}
       </div>${notesBadgesHtml}`;
 
     const varBtns = vars.map((v,i) =>
@@ -1449,6 +1466,8 @@ const FAMILLE_KEYWORDS = {
   frais:    ['citron','bergamote','mandarine','orange','pamplemousse','aquatique','marine','menthe','thé vert','eucalyptus','agrume','concombre'],
   gourmand: ['caramel','chocolat','café','praline','sucre','cacao','amande','noisette','miel','figue','framboise','fraise','cerise']
 };
+
+const FAMILLE_EMOJI = { floral: '🌸', boise: '🪵', oriental: '✨', frais: '💧', gourmand: '🍬' };
 
 function detectFamille(p) {
   const notes = [p.notes_tete, p.notes_coeur, p.notes_fond].filter(Boolean).join(',').toLowerCase();
