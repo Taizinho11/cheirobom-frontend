@@ -1375,20 +1375,27 @@ function buildGrid(products, gridId, category) {
     const allNotes = [p.notes_tete, p.notes_coeur, p.notes_fond]
       .filter(Boolean).join(', ').split(',').map(n => n.trim()).filter(Boolean).slice(0, 6);
 
+    // La source de l'image reste inchangée : vraie photo si dispo (mixte/ambiance/soin/brume), sinon flacon générique
     const hasDedicatedPhoto = (category === 'mixte' || category === 'ambiance' || category === 'soin' || category === 'brume') && p.img;
-    const usesGenericFlacon = !hasDedicatedPhoto;
-    const famille = usesGenericFlacon ? (detectFamille(p) || 'default') : null;
+    const imgSrc = hasDedicatedPhoto ? p.img : flaconSrc;
+
+    // Le style (agrandi + fond dégradé par famille + fusion multiplicative pour effacer le blanc de la photo)
+    // s'applique toujours sur Femme/Homme/Ambiance/Soin/Brume ; sur Mixte, seulement quand pas de photo dédiée
+    // (certaines photos mixte ont un fond décoratif coloré que la fusion multiplicative abîmerait).
+    const STYLED_CATEGORIES = ['femme', 'homme', 'ambiance', 'soin', 'brume'];
+    const applyStyling = STYLED_CATEGORIES.includes(category) || (category === 'mixte' && !p.img);
+    const famille = applyStyling ? (detectFamille(p) || 'default') : null;
     const familleClass = famille ? ` famille-bg-${famille}` : '';
     const familleTagHtml = (famille && famille !== 'default') ? `<span class="prod-famille-tag">${FAMILLE_EMOJI[famille]}</span>` : '';
-    const genericImgClass = usesGenericFlacon ? ' flacon-generic' : '';
-    const notesLightClass = usesGenericFlacon ? ' notes-light' : '';
+    const genericImgClass = applyStyling ? ' flacon-generic' : '';
+    const notesLightClass = applyStyling ? ' notes-light' : '';
 
     const notesBadgesHtml = allNotes.length
       ? `<div class="prod-notes-preview${notesLightClass}">${allNotes.map(n => `<span class="note-badge">${noteEmoji(n)}${n}</span>`).join('')}</div>`
       : '';
 
     const imgEl = `<div class="prod-flacon-display${familleClass}">
-        <img class="prod-flacon-img${genericImgClass}" src="${hasDedicatedPhoto ? p.img : flaconSrc}" alt="Flacon ${p.name}" loading="lazy">
+        <img class="prod-flacon-img${genericImgClass}" src="${imgSrc}" alt="Flacon ${p.name}" loading="lazy">
         ${p.img2 ? `<img class="prod-flacon-img-hover" src="${p.img2}" alt="${p.name} - notes olfactives" loading="lazy">` : ''}
         ${familleTagHtml}
       </div>${notesBadgesHtml}`;
