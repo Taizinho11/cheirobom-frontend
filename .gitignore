@@ -2,4 +2,7 @@ SumUp.html
 SumUp_files/
 contenu-semaine.md
 index_backup.html
+index.BACKUP-*.html
+index.html.bak-*
 desktop.ini
+.vercel

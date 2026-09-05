@@ -456,23 +456,6 @@ footer{border-top:1px solid var(--border);padding:2.5rem 4rem;display:flex;justi
 .wrf-error{font-size:.72rem;color:#c0392b;margin-top:.35rem;display:none;letter-spacing:.05em}
 @media(max-width:768px){.write-review-section{padding:4rem 1.2rem}.write-review-form{padding:2rem 1.4rem}.wrf-row{grid-template-columns:1fr}}
 </style>
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1497275195267883');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1497275195267883&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -908,7 +891,7 @@ src="https://www.facebook.com/tr?id=1497275195267883&ev=PageView&noscript=1"
 
 <footer>
   <div class="footer-logo">Cheirobom</div>
-  <p class="footer-copy">© 2025 Cheirobom · Extraits de Parfum · Concentrés à 30%</p>
+  <p class="footer-copy"><a href="/mentions-legales.html" style="color:inherit;text-decoration:none;border-bottom:1px solid var(--border)"><span id="footer-year">2026</span> Cheirobom</a> · Extraits de Parfum · Concentrés à 30%</p>
   <div class="footer-pay-logos">
     <span class="footer-pay-logos-label">Paiement accepté</span>
     <div class="pay-logo-visa"><span>VISA</span></div>
@@ -1671,6 +1654,8 @@ if (_initCountEl && CATALOGUE.femme) _initCountEl.textContent = `${CATALOGUE.fem
     document.getElementById('reviewConfirm').style.display = 'block';
   };
 })();
+
+document.getElementById('footer-year').textContent = '© ' + new Date().getFullYear();
 </script>
 </body>
 </html>
