@@ -138,7 +138,7 @@ nav{position:fixed;top:40px;left:0;right:0;z-index:100;padding:1.5rem 4rem;displ
 .stat-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-top:.4rem}
 
 /* FEATURES */
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:3rem}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-top:3rem}
 .feature-card{background:var(--card);padding:3rem 2.5rem;transition:opacity .4s,transform .4s,background-color .4s,border-color .4s,box-shadow .4s,color .4s;position:relative;overflow:hidden}
 .feature-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .5s}
 .feature-card:hover::before{transform:scaleX(1)}
@@ -375,7 +375,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 4rem;display:flex;justi
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}}
 .reveal{opacity:0;transform:translateY(35px);transition:opacity .9s cubic-bezier(.25,.46,.45,.94),transform .9s cubic-bezier(.25,.46,.45,.94),background-color .9s cubic-bezier(.25,.46,.45,.94),border-color .9s cubic-bezier(.25,.46,.45,.94),box-shadow .9s cubic-bezier(.25,.46,.45,.94),color .9s cubic-bezier(.25,.46,.45,.94)}
 .reveal.visible{opacity:1;transform:translateY(0)}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
 
 @media(max-width:900px){
   nav{padding:1.2rem 1.5rem}.nav-links{display:none}
@@ -590,6 +590,11 @@ footer{border-top:1px solid var(--border);padding:2.5rem 4rem;display:flex;justi
       <div class="feature-num">85+</div>
       <h3 class="feature-title">Catalogue Immense</h3>
       <p class="feature-desc">Plus de 85 fragrances — Femme, Homme, Mixte, Luxury — inspirées des plus grandes maisons mondiales.</p>
+    </div>
+    <div class="feature-card reveal d4">
+      <div class="feature-num">40%</div>
+      <h3 class="feature-title">Concentration Ultime</h3>
+      <p class="feature-desc">La Gamme Élixir pousse la concentration à 40% d'essence de parfum — notre plus haute intensité, pour une tenue et un sillage encore supérieurs.</p>
     </div>
   </div>
   <div class="stats reveal">
