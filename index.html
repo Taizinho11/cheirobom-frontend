@@ -164,6 +164,10 @@ nav{position:fixed;top:40px;left:0;right:0;z-index:100;padding:1.5rem 4rem;displ
 .famille-btn:hover{border-color:var(--gold-light);color:var(--dark)}
 .famille-btn.active{background:var(--gold);border-color:var(--gold);color:#fff}
 .elixir-genre-row{margin-bottom:2rem}
+.elixir-intro{text-align:center;max-width:640px;margin:0 auto 2.5rem;padding:1.8rem 1.6rem;background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--border)}
+.elixir-intro-eyebrow{font-size:.58rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
+.elixir-intro-text{font-size:.9rem;line-height:1.75;color:var(--text-dim)}
+.elixir-intro-stat{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);font-weight:500;margin-right:.2rem}
 .cat-sort-select{font-family:'Jost',sans-serif;font-size:.57rem;letter-spacing:.1em;text-transform:uppercase;padding:.4rem 1.8rem .4rem .75rem;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23B8924A'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .5rem center}
 .cat-result-count{font-size:.57rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);padding:.3rem .7rem;background:var(--gold-pale);border-radius:20px;white-space:nowrap}
 @media(max-width:768px){.cat-filters{flex-direction:column;align-items:flex-start;gap:.8rem}}
@@ -394,6 +398,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem 4rem;display:flex;justi
 @media (hover:hover) and (pointer:fine){.prod-card:hover .prod-flacon-img{transform:scale(1.08) translateY(-6px)}}@media (hover:hover) and (pointer:fine){.prod-card:hover .prod-flacon-img-hover{opacity:1}}
 .prod-notes-preview{position:absolute;bottom:0;left:0;right:0;padding:.55rem .4rem .6rem;display:flex;flex-wrap:wrap;gap:.22rem;justify-content:center;background:linear-gradient(to top,rgba(44,36,22,.72) 0%,transparent 100%)}
 .note-badge{font-size:.5rem;letter-spacing:.06em;text-transform:uppercase;background:rgba(184,146,74,.88);color:#fff;padding:.16rem .42rem;border-radius:20px;white-space:nowrap;font-family:'Jost',sans-serif;font-weight:400;backdrop-filter:blur(2px)}
+.elixir-badge{display:inline-flex;align-items:center;gap:.3rem;font-family:'Jost',sans-serif;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:#fff;padding:.32rem .75rem;border-radius:20px;margin-bottom:.7rem}
 
 /* ─── Dégradés par famille olfactive (flacon générique, toutes catégories) ─── */
 .prod-flacon-img.flacon-generic{height:82%;max-width:76%;mix-blend-mode:multiply}
@@ -651,6 +656,10 @@ footer{border-top:1px solid var(--border);padding:2.5rem 4rem;display:flex;justi
   <div id="tab-soin" class="cat-panel"><div class="prod-grid" id="grid-soin"></div></div>
   <div id="tab-brume" class="cat-panel"><div class="prod-grid" id="grid-brume"></div></div>
   <div id="tab-elixirs" class="cat-panel">
+    <div class="elixir-intro reveal">
+      <p class="elixir-intro-eyebrow">Gamme Élixir — Laboratoire Partenaire</p>
+      <p class="elixir-intro-text"><span class="elixir-intro-stat">40%</span> d'essence de parfum — contre 10 à 20% pour les formules classiques du marché. Une concentration supérieure pour une intensité et une tenue exceptionnelles.</p>
+    </div>
     <div class="cat-famille-btns elixir-genre-row">
       <span class="cat-filter-label">Gamme Élixir</span>
       <button class="famille-btn elixir-genre-btn active" data-genre="femme" onclick="setElixirGenre('femme')">Femme</button>
@@ -1564,6 +1573,7 @@ function buildGrid(products, gridId, category) {
           ${p.inspir ? `<div class="prod-inspir">INSPIRÉ DE ${p.inspir.toUpperCase()}</div>` : ''}
           <div class="prod-desc">${p.desc||''}</div>
           <div class="prod-variations">${varBtns}</div>
+          ${category === 'elixirs' ? `<div class="elixir-badge">✦ 40% Essence de Parfum</div>` : ''}
           <div class="prod-price">${parseFloat(fv.price).toFixed(0)} <small>€ · ${fv.size}</small></div>
           <button class="prod-add-btn" onclick="addToCartFromCard(${p._catIdx!==undefined?p._catIdx:idx},'${category}',this)">Ajouter au Panier →</button>
         </div>
@@ -1715,15 +1725,16 @@ function openProductDetail(idx, category) {
   document.getElementById('pdDesc').textContent = p.desc || '';
 
   const notesEl = document.getElementById('pdNotes');
+  const pdElixirBadge = category === 'elixirs' ? '<div class="elixir-badge">✦ 40% Essence de Parfum</div>' : '';
   if (p.notes_tete || p.notes_coeur || p.notes_fond) {
-    notesEl.innerHTML = `<div class="pd-notes">
+    notesEl.innerHTML = `${pdElixirBadge}<div class="pd-notes">
       <p class="pd-notes-title">Pyramide Olfactive</p>
       ${p.notes_tete ? `<div class="pd-note-row"><span class="pd-note-lvl">Tête</span><span class="pd-note-vals">${p.notes_tete}</span></div>` : ''}
       ${p.notes_coeur ? `<div class="pd-note-row"><span class="pd-note-lvl">Cœur</span><span class="pd-note-vals">${p.notes_coeur}</span></div>` : ''}
       ${p.notes_fond ? `<div class="pd-note-row"><span class="pd-note-lvl">Fond</span><span class="pd-note-vals">${p.notes_fond}</span></div>` : ''}
     </div>`;
   } else {
-    notesEl.innerHTML = '';
+    notesEl.innerHTML = pdElixirBadge;
   }
 
   const vars = p.variations || [];
