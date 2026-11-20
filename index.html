@@ -143,6 +143,10 @@ h2.h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.55rem,5.5vw,2.3
 @media(min-width:960px){.cat-layout{grid-template-columns:250px 1fr;gap:36px}.side{display:block;position:sticky;top:calc(var(--head) + 16px);align-self:start;max-height:calc(100vh - var(--head) - 32px);overflow:auto;padding-right:4px}.mob-bar{display:none!important}}
 .fgroup{padding:16px 0;border-bottom:1px solid var(--line)}
 .fgroup:first-child{padding-top:0}
+.bfb{position:absolute;left:8px;bottom:8px;background:#1a1410;color:#f3e7d3;font-size:.68rem;letter-spacing:.04em;padding:4px 8px;border-radius:999px}
+.bfbanner{margin:14px 0 6px;padding:16px 18px;border:1px solid #c9a46a;border-radius:14px;background:#faf3e6;color:#3a2c1e}
+.bfbanner p{margin:6px 0 12px;font-size:.92rem;line-height:1.45}
+.bfbtn{display:inline-block;background:#1a1410;color:#f3e7d3;padding:10px 18px;border-radius:999px;font-size:.9rem;text-decoration:none}
 .fgroup h3{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-d);font-weight:700;margin-bottom:10px}
 .fchips{display:flex;flex-wrap:wrap;gap:8px}
 .fchips .chip{min-height:38px;padding:7px 14px;font-size:.88rem;background:#fff}
@@ -393,6 +397,7 @@ body.lock{overflow:hidden}
     <div class="cat-head">
       <p class="eyebrow" id="catEyebrow">Catalogue</p>
       <h1 class="h2" id="catTitle" style="margin-top:6px">Tous nos produits</h1>
+      <div class="bfbanner" id="bfBanner" hidden></div>
       <div class="search" data-search="cat">
         <label class="search-box"><span class="sr">Rechercher dans le catalogue</span>
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -540,7 +545,13 @@ const SHIPPING_FEE = 4.99, FREE_SHIPPING_THRESHOLD = 50, PAGE = 24;
 const img = k => (k && k[0] === '@') ? (IMG[k.slice(1)] || '') : (k || '');
 const GAMME_OF = {femme:'classique',homme:'classique',mixte:'classique',elixirs:'elixir',prestige:'prestige'};
 const PERFUME = new Set(['femme','homme','mixte','elixirs','prestige']);
-const LABEL_CAT = {femme:'Femme',homme:'Homme',mixte:'Mixte',soin:'Soin',ambiance:'Ambiance',brume:'Brume'};
+/* Black Friday 21-27/11/2026 : parfums éligibles au 2+1 (format indiqué). Commande sur le catalogue partenaire. ?bf=1 force l'affichage (test). */
+const BF = {"femme|Adoration Florale":[["70ml","70a"]],"femme|Amour Éternel":[["70ml","70a"]],"homme|Bleu Nocturne":[["30ml","30a"],["70ml","70a"]],"femme|Bonne ou Mauvaise":[["70ml","70b"]],"femme|Conquérante Florale":[["30ml","30b"]],"femme|Déesse Céleste":[["70ml","70a"]],"homme|Désert Sauvage":[["30ml","30b"]],"femme|Douceur Sicilienne":[["30ml","30a"]],"femme|Féminité Audacieuse":[["70ml","70a"]],"mixte|Forêt Argentée":[["30ml","30b"],["70ml","70b"]],"homme|Homme d'Exception":[["30ml","30a"]],"homme|Intensité Assumée":[["30ml","30a"]],"femme|Joie":[["30ml","30a"]],"femme|L'Interdite":[["30ml","30a"]],"femme|La Signorina":[["30ml","30a"]],"homme|Le Victorieux":[["70ml","70a"]],"homme|Million d'Or":[["30ml","30a"]],"homme|Moi-Même Assumé":[["70ml","70a"]],"homme|Né à Rome Intense":[["70ml","70a"]],"femme|Nuit d'Orient":[["30ml","30a"]],"mixte|Oud Blanc":[["30ml","30a"]],"homme|Pacha Intemporel":[["30ml","30a"]],"femme|Paradoxe Absolu":[["30ml","30a"]],"femme|Regard Envoûtant":[["30ml","30a"]],"femme|Reine Fruitée":[["70ml","70c"]],"femme|Scandale Assumé":[["70ml","70a"]],"mixte|Sel et Horizon":[["30ml","30a"]],"homme|Sel Marin Intense":[["30ml","30a"]],"homme|Sommet Glacé":[["70ml","70b"]],"mixte|Sortilège Fleuri":[["70ml","70b"]],"mixte|Voile d'Encens":[["30ml","30b"]]};
+const BF_GROUPS = {'30a':'30 mL · 36 € les 3','30b':'30 mL · 51 € les 3','70a':'70 mL · 70 € les 3','70b':'70 mL · 96 € les 3','70c':'70 mL · 114 € les 3'};
+const BF_LINK = 'https://catalogueparfums.fr';
+const BF_ON = (()=>{ const d = new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Paris'}); return (d>='2026-11-21' && d<='2026-11-27') || /[?&]bf=1/.test(location.search); })();
+const CATS_NAV = ['femme','homme','mixte','soin','ambiance','brume'].concat(BF_ON ? ['blackfriday'] : []);
+const LABEL_CAT = {femme:'Femme',homme:'Homme',mixte:'Mixte',soin:'Soin',ambiance:'Ambiance',brume:'Brume',blackfriday:'Black Friday'};
 const LABEL_GAMME = {classique:'Classique 30 %',elixir:'Élixir 40 %',prestige:'Prestige'};
 const SHORT_GAMME = {classique:'Classique',elixir:'Élixir',prestige:'Prestige'};
 const FAMS = [
@@ -582,6 +593,7 @@ for (const [cat,list] of Object.entries(CATALOGUE)){
     const prices = (p.variations||[]).map(v=>parseFloat(v.price)).filter(n=>!isNaN(n));
     const it = {id:cat+'-'+(idx+1), cat, idx, p, group, gamme:GAMME_OF[cat]||null,
       fam: detectFamille(p), min: prices.length ? Math.min(...prices) : 0, img: imageFor(p,cat)};
+    it.bf = BF[cat+'|'+p.name] || null;
     it.hName = norm(p.name).split(' ');
     it.hIns = norm(p.inspir).split(' ').filter(Boolean);
     it.hNotes = norm([p.notes_tete,p.notes_coeur,p.notes_fond].join(' ')).split(' ').filter(Boolean);
@@ -591,6 +603,7 @@ for (const [cat,list] of Object.entries(CATALOGUE)){
 }
 const BY_ID = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
 const COUNT = {}; ITEMS.forEach(i=>{ COUNT[i.group] = (COUNT[i.group]||0)+1; });
+COUNT.blackfriday = ITEMS.filter(i=>i.bf).length;
 
 /* ---------- Recherche tolérante aux fautes ---------- */
 function lev(a,b,max){
@@ -651,15 +664,15 @@ function openSheet(id){ const el=$(id); el.classList.add('open'); el.setAttribut
 function closeSheet(id){ const el=$(id); el.classList.remove('open'); el.setAttribute('aria-hidden','true'); openStack = openStack.filter(x=>x!==id); if(!openStack.length) document.body.classList.remove('lock'); }
 
 /* ---------- État du catalogue ---------- */
-const st = {group:'all', gamme:'all', fam:'all', sort:'none', q:'', shown:PAGE};
-const TITLE_CAT = {all:'Tous nos produits',femme:'Parfums Femme',homme:'Parfums Homme',mixte:'Parfums Mixtes',soin:'Soins',ambiance:'Parfums d\'ambiance',brume:'Brumes'};
+const st = {group:'all', gamme:'all', fam:'all', sort:'none', q:'', bfg:'all', shown:PAGE};
+const TITLE_CAT = {all:'Tous nos produits',femme:'Parfums Femme',homme:'Parfums Homme',mixte:'Parfums Mixtes',soin:'Soins',ambiance:'Parfums d\'ambiance',brume:'Brumes',blackfriday:'Black Friday · 2 achetés, le 3e offert'};
 
 function readHash(){
   const h = location.hash.slice(1);
   if (h.startsWith('produit/')){ return {view:'pd', id:h.slice(8)}; }
   if (h.startsWith('catalogue')){
     const qs = new URLSearchParams(h.split('?')[1]||'');
-    return {view:'cat', group:qs.get('cat')||'all', gamme:qs.get('gamme')||'all', fam:qs.get('fam')||'all', sort:qs.get('tri')||'none', q:qs.get('q')||''};
+    return {view:'cat', group:qs.get('cat')||'all', gamme:qs.get('gamme')||'all', fam:qs.get('fam')||'all', sort:qs.get('tri')||'none', q:qs.get('q')||'', bfg:qs.get('bfg')||'all'};
   }
   return {view:'home'};
 }
@@ -670,10 +683,11 @@ function catHash(){
   if (st.fam!=='all') qs.set('fam',st.fam);
   if (st.sort!=='none') qs.set('tri',st.sort);
   if (st.q) qs.set('q',st.q);
+  if (st.bfg!=='all') qs.set('bfg',st.bfg);
   const s = qs.toString(); return '#catalogue' + (s ? '?'+s : '');
 }
 function goCat(patch, opts){
-  Object.assign(st, {group:'all',gamme:'all',fam:'all',sort:'none',q:''}, patch||{}); st.shown = PAGE;
+  Object.assign(st, {group:'all',gamme:'all',fam:'all',sort:'none',q:'',bfg:'all'}, patch||{}); st.shown = PAGE;
   const h = catHash();
   if (location.hash !== h) location.hash = h; else render();
   if (!opts || !opts.keepScroll) window.scrollTo(0,0);
@@ -687,7 +701,8 @@ function setFilter(patch){
 
 function filtered(){
   let list = st.q ? (search(st.q)||[]) : ITEMS.slice();
-  if (st.group!=='all') list = list.filter(i=>i.group===st.group);
+  if (st.group==='blackfriday'){ list = list.filter(i=>i.bf); if (st.bfg!=='all') list = list.filter(i=>i.bf.some(x=>x[1]===st.bfg)); }
+  else if (st.group!=='all') list = list.filter(i=>i.group===st.group);
   if (st.gamme!=='all') list = list.filter(i=>i.gamme===st.gamme);
   if (st.fam!=='all') list = list.filter(i=>i.fam===st.fam);
   if (st.sort==='asc') list.sort((a,b)=>a.min-b.min);
@@ -700,7 +715,7 @@ function cardHTML(it){
   const p = it.p, fam = it.fam || 'default';
   const tag = it.gamme ? SHORT_GAMME[it.gamme] : LABEL_CAT[it.group];
   return `<a class="card" href="#produit/${it.id}" data-id="${it.id}">
-    <div class="ph bg-${fam}"><span class="tag">${esc(tag)}</span><img src="${it.img}" alt="${esc(p.name)}" loading="lazy" decoding="async"></div>
+    <div class="ph bg-${fam}"><span class="tag">${esc(tag)}</span>${(it.bf && BF_ON) ? `<span class="bfb">2+1 · ${it.bf.map(x=>x[0].replace('ml',' mL')).join(' / ')}</span>` : ''}<img src="${it.img}" alt="${esc(p.name)}" loading="lazy" decoding="async"></div>
     <div class="bd"><div class="nm">${esc(p.name)}</div>
       ${marqueDe(p.inspir) ? `<div class="ins">Inspiré de ${esc(marqueDe(p.inspir))}</div>` : ''}
       <div class="pr">dès <b>${fmtPrice(it.min)}</b></div></div></a>`;
@@ -712,7 +727,10 @@ function filtersHTML(withCats){
   const g = st.group, isParf = g==='all' || ['femme','homme','mixte'].includes(g);
   let h = '';
   if (withCats){
-    h += `<div class="fgroup"><h3>Catégorie</h3><div class="fchips">${chip('Tout',g==='all','data-f="group:all"')}${['femme','homme','mixte','soin','ambiance','brume'].map(k=>chip(LABEL_CAT[k],g===k,`data-f="group:${k}"`,COUNT[k])).join('')}</div></div>`;
+    h += `<div class="fgroup"><h3>Catégorie</h3><div class="fchips">${chip('Tout',g==='all','data-f="group:all"')}${CATS_NAV.map(k=>chip(LABEL_CAT[k],g===k,`data-f="group:${k}"`,COUNT[k])).join('')}</div></div>`;
+  }
+  if (g==='blackfriday'){
+    h += `<div class="fgroup"><h3>Offre : 3 du même groupe, 2 payés</h3><div class="fchips">${chip('Tous',st.bfg==='all','data-f="bfg:all"')}${Object.entries(BF_GROUPS).map(([k,t])=>chip(t,st.bfg===k,`data-f="bfg:${k}"`)).join('')}</div></div>`;
   }
   if (isParf){
     h += `<div class="fgroup"><h3>Gamme</h3><div class="fchips">${chip('Toutes',st.gamme==='all','data-f="gamme:all"')}${['classique','elixir','prestige'].map(k=>chip(LABEL_GAMME[k],st.gamme===k,`data-f="gamme:${k}"`)).join('')}</div></div>`;
@@ -729,6 +747,7 @@ function activeTagsHTML(){
   const tags = [];
   if (st.q) tags.push(['q',`« ${st.q} »`]);
   if (st.gamme!=='all') tags.push(['gamme',LABEL_GAMME[st.gamme]]);
+  if (st.bfg!=='all' && BF_GROUPS[st.bfg]) tags.push(['bfg',BF_GROUPS[st.bfg]]);
   if (st.fam!=='all') tags.push(['fam',FAMS.find(f=>f.k===st.fam).t]);
   if (st.sort!=='none') tags.push(['sort',st.sort==='asc'?'Prix croissant':'Prix décroissant']);
   return tags.map(([k,l])=>`<button class="atag" data-untag="${k}" aria-label="Retirer le filtre ${esc(l)}">${esc(l)} <span aria-hidden="true">×</span></button>`).join('');
@@ -737,14 +756,19 @@ function renderCat(){
   const list = filtered();
   $('#catTitle').textContent = st.q ? `Résultats pour « ${st.q} »` : TITLE_CAT[st.group];
   $('#catEyebrow').textContent = st.gamme!=='all' ? LABEL_GAMME[st.gamme] : (st.fam!=='all' ? 'Famille '+FAMS.find(f=>f.k===st.fam).t.toLowerCase() : 'Catalogue');
+  const bb = $('#bfBanner');
+  if (st.group==='blackfriday' && BF_ON){
+    bb.hidden = false;
+    bb.innerHTML = `<b>Black Friday · du 21 au 27 novembre</b><p>Choisissez 3 parfums du même groupe et du même format : vous n'en payez que 2. Filtrez par groupe à gauche. La commande se fait directement sur notre catalogue partenaire, qui vous livre chez vous.</p><a class="bfbtn" href="${BF_LINK}" target="_blank" rel="noopener">Commander sur le catalogue</a>`;
+  } else { bb.hidden = true; bb.innerHTML = ''; }
   const cs = $('#catSearch'); if (document.activeElement !== cs) cs.value = st.q; syncClear(cs);
   $('#sideFilters').innerHTML = filtersHTML(true);
   $('#sheetFilters').innerHTML = filtersHTML(false);
-  $('#mobCats').innerHTML = chip('Tout',st.group==='all','data-f="group:all"') + ['femme','homme','mixte','soin','ambiance','brume'].map(k=>chip(LABEL_CAT[k],st.group===k,`data-f="group:${k}"`)).join('');
+  $('#mobCats').innerHTML = chip('Tout',st.group==='all','data-f="group:all"') + CATS_NAV.map(k=>chip(LABEL_CAT[k],st.group===k,`data-f="group:${k}"`)).join('');
   const n = list.length, txt = `${n} produit${n>1?'s':''}`;
   $('#countMob').textContent = txt; $('#countDesk').textContent = txt;
   $('#sheetApply').textContent = n ? `Voir les ${n} produit${n>1?'s':''}` : 'Aucun produit';
-  const nf = (st.gamme!=='all')+(st.fam!=='all')+(st.sort!=='none');
+  const nf = (st.gamme!=='all')+(st.fam!=='all')+(st.sort!=='none')+(st.bfg!=='all');
   $('#fDot').hidden = !nf; $('#fDot').textContent = nf;
   const tags = activeTagsHTML(); $('#activeTags').innerHTML = tags; $('#activeTagsDesk').innerHTML = tags;
   const grid = $('#grid');
@@ -775,11 +799,11 @@ function renderHomeStatic(){
   const famCount = {}; ITEMS.forEach(i=>{ if(i.fam && PERFUME.has(i.cat)) famCount[i.fam]=(famCount[i.fam]||0)+1; });
   $('#fams').innerHTML = FAMS.map(f=>`<button class="fam f-${f.k}" data-go="fam:${f.k}"><span class="t">${f.t}</span><span><span class="s">${f.s}</span><span class="n" style="display:block">${famCount[f.k]||0} parfums</span></span></button>`).join('');
   $('#heroChips').innerHTML = ['femme','homme','mixte'].map(k=>`<button class="chip" data-go="group:${k}">${LABEL_CAT[k]}</button>`).join('') + `<button class="chip" data-go="gamme:elixir">Élixir 40 %</button><button class="chip" data-go="sort:asc">Petits prix</button>`;
-  const navHTML = ['femme','homme','mixte','soin','ambiance','brume'].map(k=>`<button data-go="group:${k}">${LABEL_CAT[k]}</button>`).join('');
+  const navHTML = CATS_NAV.map(k=>`<button data-go="group:${k}">${LABEL_CAT[k]}</button>`).join('');
   $('#topNav').innerHTML = navHTML;
-  $('#drawerLinks').innerHTML = ['femme','homme','mixte','soin','ambiance','brume'].map(k=>`<button class="dl" data-go="group:${k}">${LABEL_CAT[k]}<small>${COUNT[k]}</small></button>`).join('')
+  $('#drawerLinks').innerHTML = CATS_NAV.map(k=>`<button class="dl" data-go="group:${k}">${LABEL_CAT[k]}<small>${COUNT[k]}</small></button>`).join('')
     + `<button class="dl" data-go="all">Tout le catalogue<small>${ITEMS.length}</small></button><button class="dl" data-act="to-reviews">Avis clients</button><button class="dl" data-act="to-contact">Contact</button>`;
-  $('#footLinks').innerHTML = ['femme','homme','mixte','soin','ambiance','brume'].map(k=>`<button class="fl" data-go="group:${k}">${LABEL_CAT[k]}</button>`).join('');
+  $('#footLinks').innerHTML = CATS_NAV.map(k=>`<button class="fl" data-go="group:${k}">${LABEL_CAT[k]}</button>`).join('');
   ['#logoImg','#logoImg2','#logoImg3'].forEach(s=>$(s).src = IMG.logo);
   $('#footer-year').textContent = '© ' + new Date().getFullYear();
 }
@@ -968,7 +992,7 @@ function render(){
   }
   if ($('#pdSheet').classList.contains('open')) closeSheet('#pdSheet');
   if (r.view === 'cat'){
-    Object.assign(st, {group:r.group, gamme:r.gamme, fam:r.fam, sort:r.sort, q:r.q});
+    Object.assign(st, {group:r.group, gamme:r.gamme, fam:r.fam, sort:r.sort, q:r.q, bfg:r.bfg||'all'});
     if (!st.shown) st.shown = PAGE;
     $('#viewHome').hidden = true; $('#viewCat').hidden = false; lastListHash = location.hash;
     renderCat();
@@ -983,7 +1007,7 @@ window.addEventListener('hashchange', render);
 function parseGo(v){
   if (v === 'all') return {};
   const [k,val] = v.split(':');
-  return ({group:{group:val},gamme:{gamme:val},fam:{fam:val},sort:{sort:val}})[k] || {};
+  return ({group:{group:val},gamme:{gamme:val},fam:{fam:val},sort:{sort:val},bfg:{bfg:val}})[k] || {};
 }
 
 document.addEventListener('click', e=>{
@@ -1015,7 +1039,7 @@ document.addEventListener('click', e=>{
     case 'close-cart': closeSheet('#cartSheet'); break;
     case 'filters': openSheet('#filterSheet'); break;
     case 'close-sheet': closeSheet('#filterSheet'); window.scrollTo(0,0); break;
-    case 'reset': setFilter({gamme:'all',fam:'all',sort:'none',q:''}); break;
+    case 'reset': setFilter({gamme:'all',fam:'all',sort:'none',q:'',bfg:'all'}); break;
     case 'more': st.shown += PAGE; renderCat(); break;
     case 'close-pd': closeProduct(); break;
     case 'checkout': openCheckout(); break;
