@@ -494,6 +494,7 @@ body.lock{overflow:hidden}
       <div id="cartShip"></div>
       <div class="sum">
         <div><span>Sous-total</span><span id="cartSub">0,00 €</span></div>
+        <div id="cartPromoRow" hidden><span>Remise Black Friday</span><span id="cartPromo"></span></div>
         <div><span>Livraison</span><span id="cartShipAmt">4,99 €</span></div>
         <div class="tot"><span>Total</span><span id="cartTotal">0,00 €</span></div>
       </div>
@@ -545,11 +546,11 @@ const SHIPPING_FEE = 4.99, FREE_SHIPPING_THRESHOLD = 50, PAGE = 24;
 const img = k => (k && k[0] === '@') ? (IMG[k.slice(1)] || '') : (k || '');
 const GAMME_OF = {femme:'classique',homme:'classique',mixte:'classique',elixirs:'elixir',prestige:'prestige'};
 const PERFUME = new Set(['femme','homme','mixte','elixirs','prestige']);
-/* Black Friday 21-27/11/2026 : parfums éligibles au 2+1 (format indiqué). Commande sur le catalogue partenaire. ?bf=1 force l'affichage (test). */
-const BF = {"femme|Adoration Florale":[["70ml","70a"]],"femme|Amour Éternel":[["70ml","70a"]],"homme|Bleu Nocturne":[["30ml","30a"],["70ml","70a"]],"femme|Bonne ou Mauvaise":[["70ml","70b"]],"femme|Conquérante Florale":[["30ml","30b"]],"femme|Déesse Céleste":[["70ml","70a"]],"homme|Désert Sauvage":[["30ml","30b"]],"femme|Douceur Sicilienne":[["30ml","30a"]],"femme|Féminité Audacieuse":[["70ml","70a"]],"mixte|Forêt Argentée":[["30ml","30b"],["70ml","70b"]],"homme|Homme d'Exception":[["30ml","30a"]],"homme|Intensité Assumée":[["30ml","30a"]],"femme|Joie":[["30ml","30a"]],"femme|L'Interdite":[["30ml","30a"]],"femme|La Signorina":[["30ml","30a"]],"homme|Le Victorieux":[["70ml","70a"]],"homme|Million d'Or":[["30ml","30a"]],"homme|Moi-Même Assumé":[["70ml","70a"]],"homme|Né à Rome Intense":[["70ml","70a"]],"femme|Nuit d'Orient":[["30ml","30a"]],"mixte|Oud Blanc":[["30ml","30a"]],"homme|Pacha Intemporel":[["30ml","30a"]],"femme|Paradoxe Absolu":[["30ml","30a"]],"femme|Regard Envoûtant":[["30ml","30a"]],"femme|Reine Fruitée":[["70ml","70c"]],"femme|Scandale Assumé":[["70ml","70a"]],"mixte|Sel et Horizon":[["30ml","30a"]],"homme|Sel Marin Intense":[["30ml","30a"]],"homme|Sommet Glacé":[["70ml","70b"]],"mixte|Sortilège Fleuri":[["70ml","70b"]],"mixte|Voile d'Encens":[["30ml","30b"]]};
-const BF_GROUPS = {'30a':'30 mL · 36 € les 3','30b':'30 mL · 51 € les 3','70a':'70 mL · 70 € les 3','70b':'70 mL · 96 € les 3','70c':'70 mL · 114 € les 3'};
-const BF_LINK = 'https://catalogueparfums.fr';
-const BF_ON = /[?&]bf=1/.test(location.search); /* DÉSACTIVÉ le 20/11 : Italo n'est pas ambassadeur, il fait ses propres promos. Test seulement avec ?bf=1. */
+/* Black Friday 21-27/11/2026 : promos Cheirobom sur les parfums Classique (femme/homme/mixte), hors Élixir et Prestige.
+   30 mL et 70 mL : 2 achetés, le 3e (le moins cher) offert. 50 mL : 3 pour 110 €. Remise appliquée dans le panier. Test local : ?bf=1 sur localhost. */
+const BF_GROUPS = {'30ml':'30 mL · le 3e offert','70ml':'70 mL · le 3e offert','50ml':'50 mL · 3 pour 110 €'};
+const BF_50_PRICE = 110;
+const BF_ON = (()=>{ const d = new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Paris'}); const local = ['localhost','127.0.0.1'].includes(location.hostname) && /[?&]bf=1/.test(location.search); return (d>='2026-11-21' && d<='2026-11-27') || local; })();
 const CATS_NAV = ['femme','homme','mixte','soin','ambiance','brume'].concat(BF_ON ? ['blackfriday'] : []);
 const LABEL_CAT = {femme:'Femme',homme:'Homme',mixte:'Mixte',soin:'Soin',ambiance:'Ambiance',brume:'Brume',blackfriday:'Black Friday'};
 const LABEL_GAMME = {classique:'Classique 30 %',elixir:'Élixir 40 %',prestige:'Prestige'};
@@ -593,7 +594,8 @@ for (const [cat,list] of Object.entries(CATALOGUE)){
     const prices = (p.variations||[]).map(v=>parseFloat(v.price)).filter(n=>!isNaN(n));
     const it = {id:cat+'-'+(idx+1), cat, idx, p, group, gamme:GAMME_OF[cat]||null,
       fam: detectFamille(p), min: prices.length ? Math.min(...prices) : 0, img: imageFor(p,cat)};
-    it.bf = BF[cat+'|'+p.name] || null;
+    it.bf = ['femme','homme','mixte'].includes(cat) ? (p.variations||[]).filter(v=>BF_GROUPS[v.size]).map(v=>[v.size,v.size]) : [];
+    if (!it.bf.length) it.bf = null;
     it.hName = norm(p.name).split(' ');
     it.hIns = norm(p.inspir).split(' ').filter(Boolean);
     it.hNotes = norm([p.notes_tete,p.notes_coeur,p.notes_fond].join(' ')).split(' ').filter(Boolean);
@@ -715,7 +717,7 @@ function cardHTML(it){
   const p = it.p, fam = it.fam || 'default';
   const tag = it.gamme ? SHORT_GAMME[it.gamme] : LABEL_CAT[it.group];
   return `<a class="card" href="#produit/${it.id}" data-id="${it.id}">
-    <div class="ph bg-${fam}"><span class="tag">${esc(tag)}</span>${(it.bf && BF_ON) ? `<span class="bfb">2+1 · ${it.bf.map(x=>x[0].replace('ml',' mL')).join(' / ')}</span>` : ''}<img src="${it.img}" alt="${esc(p.name)}" loading="lazy" decoding="async"></div>
+    <div class="ph bg-${fam}"><span class="tag">${esc(tag)}</span>${(it.bf && BF_ON) ? `<span class="bfb">${it.bf.map(x=>x[0]==='50ml' ? '50 mL · 3 pour 110 €' : x[0].replace('ml',' mL')+' · 3e offert').join(' / ')}</span>` : ''}<img src="${it.img}" alt="${esc(p.name)}" loading="lazy" decoding="async"></div>
     <div class="bd"><div class="nm">${esc(p.name)}</div>
       ${marqueDe(p.inspir) ? `<div class="ins">Inspiré de ${esc(marqueDe(p.inspir))}</div>` : ''}
       <div class="pr">dès <b>${fmtPrice(it.min)}</b></div></div></a>`;
@@ -730,7 +732,7 @@ function filtersHTML(withCats){
     h += `<div class="fgroup"><h3>Catégorie</h3><div class="fchips">${chip('Tout',g==='all','data-f="group:all"')}${CATS_NAV.map(k=>chip(LABEL_CAT[k],g===k,`data-f="group:${k}"`,COUNT[k])).join('')}</div></div>`;
   }
   if (g==='blackfriday'){
-    h += `<div class="fgroup"><h3>Offre : 3 du même groupe, 2 payés</h3><div class="fchips">${chip('Tous',st.bfg==='all','data-f="bfg:all"')}${Object.entries(BF_GROUPS).map(([k,t])=>chip(t,st.bfg===k,`data-f="bfg:${k}"`)).join('')}</div></div>`;
+    h += `<div class="fgroup"><h3>Offre par format</h3><div class="fchips">${chip('Tous',st.bfg==='all','data-f="bfg:all"')}${Object.entries(BF_GROUPS).map(([k,t])=>chip(t,st.bfg===k,`data-f="bfg:${k}"`)).join('')}</div></div>`;
   }
   if (isParf){
     h += `<div class="fgroup"><h3>Gamme</h3><div class="fchips">${chip('Toutes',st.gamme==='all','data-f="gamme:all"')}${['classique','elixir','prestige'].map(k=>chip(LABEL_GAMME[k],st.gamme===k,`data-f="gamme:${k}"`)).join('')}</div></div>`;
@@ -759,7 +761,7 @@ function renderCat(){
   const bb = $('#bfBanner');
   if (st.group==='blackfriday' && BF_ON){
     bb.hidden = false;
-    bb.innerHTML = `<b>Black Friday · du 21 au 27 novembre</b><p>Choisissez 3 parfums du même groupe et du même format : vous n'en payez que 2. Filtrez par groupe à gauche. La commande se fait directement sur notre catalogue partenaire, qui vous livre chez vous.</p><a class="bfbtn" href="${BF_LINK}" target="_blank" rel="noopener">Commander sur le catalogue</a>`;
+    bb.innerHTML = `<b>Black Friday · du 21 au 27 novembre</b><p>Sur tous nos parfums Classique (hors Élixir et Prestige) : en 30 mL et en 70 mL, 2 achetés, le 3e offert (le moins cher des trois). En 50 mL, 3 parfums pour 110 €. La remise s'applique automatiquement dans le panier.</p>`;
   } else { bb.hidden = true; bb.innerHTML = ''; }
   const cs = $('#catSearch'); if (document.activeElement !== cs) cs.value = st.q; syncClear(cs);
   $('#sideFilters').innerHTML = filtersHTML(true);
@@ -886,12 +888,35 @@ function addToCart(it, v){
   showToast('✓ ' + it.p.name + ' ajouté au panier');
 }
 const getSubtotal = () => cart.reduce((s,i)=>s+i.price*i.qty,0);
-const getShipping = () => getSubtotal() >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-const getTotal = () => getSubtotal() + getShipping();
+/* Promo Black Friday : calcul en centimes, par format, triplets des prix les plus élevés d'abord. */
+function bfPlan(){
+  const toC = n => Math.round(n*100), elig = {}, pay = [];
+  cart.forEach(i=>{ const it = BY_ID[i.id];
+    if (BF_ON && it && ['femme','homme','mixte'].includes(it.cat) && BF_GROUPS[i.size]){ for (let q=0;q<i.qty;q++) (elig[i.size] = elig[i.size] || []).push({name:i.name,size:i.size,c:toC(i.price)}); }
+    else pay.push({name:i.name,size:i.size,c:toC(i.price),qty:i.qty}); });
+  let discC = 0; const rows = [];
+  for (const size of Object.keys(elig)){
+    const u = elig[size].sort((a,b)=>b.c-a.c), nTri = Math.floor(u.length/3); let dSize = 0;
+    for (let t=0;t<nTri;t++){
+      const tri = u.slice(t*3,t*3+3), sum = tri.reduce((s,x)=>s+x.c,0);
+      const target = size==='50ml' ? Math.min(sum, BF_50_PRICE*100) : sum - tri[2].c, d = sum - target;
+      dSize += d; let left = target;
+      tri.forEach((x,k)=>{ const c = k<2 ? Math.max(1,Math.round(target*x.c/sum)) : Math.max(1,left); left -= c; pay.push({name:x.name,size:x.size,c,qty:1}); });
+    }
+    u.slice(nTri*3).forEach(x=>pay.push({name:x.name,size:x.size,c:x.c,qty:1}));
+    if (dSize>0){ discC += dSize; rows.push({label:'Black Friday · '+size.replace('ml',' mL'), c:dSize}); }
+  }
+  return {discC, rows, pay};
+}
+const getDiscount = () => bfPlan().discC / 100;
+const getNetC = () => Math.round(getSubtotal()*100) - bfPlan().discC;
+const getShipping = () => getNetC()/100 >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+const getTotal = () => (getNetC() + Math.round(getShipping()*100)) / 100;
 function updateCartUI(){
-  const sub = getSubtotal(), ship = getShipping(), count = cart.reduce((s,i)=>s+i.qty,0);
+  const plan = bfPlan(), sub = getNetC()/100, ship = getShipping(), count = cart.reduce((s,i)=>s+i.qty,0);
   const b = $('#cartCount'); b.textContent = count; b.classList.toggle('zero', !count);
-  $('#cartSub').textContent = fmtPrice(sub);
+  $('#cartSub').textContent = fmtPrice(getSubtotal());
+  const pr = $('#cartPromoRow'); pr.hidden = !plan.discC; $('#cartPromo').textContent = plan.discC ? '−' + fmtPrice(plan.discC/100) : '';
   const sa = $('#cartShipAmt');
   if (cart.length && !ship){ sa.textContent = 'Offerte'; sa.className='free'; } else { sa.textContent = fmtPrice(SHIPPING_FEE); sa.className=''; }
   $('#cartTotal').textContent = fmtPrice(cart.length ? sub+ship : 0);
@@ -910,6 +935,7 @@ function updateCartUI(){
     <div class="qty"><button data-qty="-1" data-key="${esc(i.key)}" aria-label="Retirer un">−</button><span>${i.qty}</span><button data-qty="1" data-key="${esc(i.key)}" aria-label="Ajouter un">+</button></div></div>
     <div class="r"><b>${fmtPrice(i.price*i.qty)}</b><button class="rm" data-rm="${esc(i.key)}">Retirer</button></div></div>`; }).join('');
 }
+if (BF_ON && ['localhost','127.0.0.1'].includes(location.hostname)) window.__bf = {bfPlan, setCart:c=>{cart=c; updateCartUI();}, getTotal, getShipping, getSubtotal};
 function changeQty(key, d){ const i = cart.find(x=>x.key===key); if(!i) return; i.qty += d; if (i.qty<=0) cart = cart.filter(x=>x.key!==key); saveCart(); updateCartUI(); }
 
 /* ---------- Paiement (même appel que le site actuel) ---------- */
@@ -917,6 +943,7 @@ function openCheckout(){
   if (!cart.length) return;
   const ship = getShipping();
   $('#coList').innerHTML = cart.map(i=>`<div class="row"><span>${esc(i.name)} · ${esc(i.size)} × ${i.qty}</span><span>${fmtPrice(i.price*i.qty)}</span></div>`).join('')
+    + bfPlan().rows.map(r=>`<div class="row"><span>${esc(r.label)}</span><span>−${fmtPrice(r.c/100)}</span></div>`).join('')
     + `<div class="row"><span>Livraison</span><span${ship?'':' class="free"'}>${ship?fmtPrice(ship):'Offerte'}</span></div>`
     + `<div class="row" style="font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:8px"><span>Total TTC</span><span>${fmtPrice(getTotal())}</span></div>`;
   $('#stripeError').textContent = '';
@@ -934,7 +961,7 @@ async function processPayment(){
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         items: [
-          ...cart.map(i=>({name:i.name, size:i.size, price:i.price, qty:i.qty})),
+          ...bfPlan().pay.map(x=>({name:x.name, size:x.size, price:x.c/100, qty:x.qty})),
           ...(getShipping() > 0 ? [{name:'Livraison', size:'', price:SHIPPING_FEE, qty:1}] : [])
         ],
         customer: {name, email}
